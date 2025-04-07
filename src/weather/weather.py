@@ -1,9 +1,10 @@
+# This file contains the main functionality of the weather library. It includes classes such as WeatherForecast, WeatherForecastExtractor, and various methods for fetching and formatting weather data.
+
 import json, os, re, argparse
 from typing import List, Dict
 from pyquery import PyQuery as pq
 from urllib.error import HTTPError
 from time import sleep
-
 
 skynames = {
     'sunny': 'sunnyDay',
@@ -179,7 +180,7 @@ class WeatherForecastExtractor:
         )
 
     def wind_speed(self):
-        return self.html_data("div[data-testid='WeatherDetailsListItem'] span[data-testid='Wind']").text().split("\n")[1]
+        return self.html_data("div[data-testid='WeatherDetailsListItem'] span[data-testid='Wind'] span").text().strip()
 
     def humidity(self):
         return self.html_data("span[data-testid='PercentageValue']").text()

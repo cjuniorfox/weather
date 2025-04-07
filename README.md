@@ -1,10 +1,10 @@
-# Weather Forecast CLI Script
+# Weather Forecast Library
 
 ## Overview
 
-This script fetches and parses weather forecast data from Weather.com and formats it for display in various environments such as a terminal or Waybar, a status bar tool. It leverages `pyquery` for HTML parsing and provides detailed weather information, including hourly and daily predictions, formatted for ease of use.
+This library fetches and parses weather forecast data from Weather.com and formats it for display in various environments such as a terminal or Waybar, a status bar tool. It leverages `pyquery` for HTML parsing and provides detailed weather information, including hourly and daily predictions, formatted for ease of use.
 
-### Waybar widget
+### Waybar Widget
 
 ![Weather widget on Waybar](image.png)
 
@@ -35,61 +35,63 @@ This script fetches and parses weather forecast data from Weather.com and format
 Install dependencies using:
 
 ```bash
-pip install -r requirements.txt
+pip install weather-library
 ```
 
 ## Usage
 
-### Command-Line Arguments
+### Command-Line Interface (CLI)
+
+The library includes a CLI tool for fetching and displaying weather data. After installation, you can use the `weather` command.
+
+#### Command-Line Arguments
 
 - `--location`: Specify the 64-bit hex unique location ID for Weather.com. (Obtain from Weather.com URL for your location.)
 - `--lang`: Specify the language for Weather.com data (e.g., `en-US`, `pt-BR`). If not specified, the language used will be the system default.
-- `--output` : Choose between `console`, `waybar` or `json`. Forther explanation below. The default one is `console`.
-- `--persist` : Instead of executing and closing, keep the process running and retrieve new information from Weather.com every 10 minutes. Only makes sense when output is `console`.
-- `--icons` : Specify the icons set for the output. Choose between `emoji` or `fa` for using `font-awesome` icons insted. default is `emoji`.
+- `--output`: Choose between `console`, `waybar`, or `json`. Further explanation below. The default is `console`.
+- `--persist`: Instead of executing and closing, keep the process running and retrieve new information from Weather.com every 10 minutes. Only makes sense when output is `console`.
+- `--icons`: Specify the icon set for the output. Choose between `emoji` or `fa` for using `font-awesome` icons instead. The default is `emoji`.
 
-### Examples
+#### Examples
 
 1. **Fetch weather data for a specific location:**
 
    ```bash
-   python weather.py --lang en-IL --location WEATHER_LOCATION_ID
+   weather --lang en-IL --location WEATHER_LOCATION_ID
    ```
 
-   The `WEATHER_LOCATION_ID` is a 64-bit hex unique location. To get the intended location, go to Weather.com, search for your location, and check the URL. the `LOCATION_ID` will be at the URL. Example:
+   The `WEATHER_LOCATION_ID` is a 64-bit hex unique location. To get the intended location, go to Weather.com, search for your location, and check the URL. The `LOCATION_ID` will be in the URL. Example:
 
    - For **São Paulo**, the URL is: `https://weather.com/pt-BR/weather/today/l/ebe93c0e09d0cfe19844d4281461901cd8f083c310e64255954758c8dcab784b`
-   - The `WEATHER_LOCATION_ID` is  `ebe93c0e09d0cfe19844d4281461901cd8f083c310e64255954758c8dcab784b`.
+   - The `WEATHER_LOCATION_ID` is `ebe93c0e09d0cfe19844d4281461901cd8f083c310e64255954758c8dcab784b`.
 
-   Optionally, you can set the value as the environment variable `WEATHER_LOCATION_ID` and omit the `--location` parameter instead. If no enviroment variable nor parameter is specified, the weather data will be the default one from Weather.com.
+   Optionally, you can set the value as the environment variable `WEATHER_LOCATION_ID` and omit the `--location` parameter instead. If no environment variable nor parameter is specified, the weather data will be the default one from Weather.com.
 
 2. **Display formatted weather in the console:**
 
    ```bash
-   python weather.py --lang en-US
+   weather --lang en-US
    ```
 
-   With the addition of `--persist` option, the weather script will keep open and updating its information with new data every 10 minutes.
+   With the addition of the `--persist` option, the weather script will keep running and updating its information with new data every 10 minutes.
 
 3. **Generate JSON for Waybar:**
 
    ```bash
-   python weather.py --output waybar --lang pt-BR --location WEATHER_LOCATION_ID
+   weather --output waybar --lang pt-BR --location WEATHER_LOCATION_ID
    ```
 
 4. **Generate JSON output for general usage:**
 
-  ```bash
-  python weather.py --output json --location WEATHER_LOCATION_ID | jq
-  ```
-
-  Above the **JSON Schema** output of this json.
+   ```bash
+   weather --output json --location WEATHER_LOCATION_ID | jq
+   ```
 
 ### Output Formats
 
 #### Console Output
 
-The script displays a formatted weather summary, including:
+The library displays a formatted weather summary, including:
 
 - Current weather status.
 - Temperature (current, max/min).
@@ -105,23 +107,21 @@ The JSON includes:
 - `tooltip`: Detailed weather information.
 - `class`: Status code for further customization.
 
-### JSON General output
+#### General JSON Output
 
-Here the following [JSON Schema](schema.json) for this output.
-
-The key values for this json is:
+The JSON output includes detailed weather data. Key fields include:
 
 - `temperature`: An object containing the temperature information with the following fields:
   - `current`: The current temperature.
-  - `feel`: The temperature feel
-  - `max` : The maximum temperature
-  - `min` : The minimum temperature
+  - `feel`: The "feels-like" temperature.
+  - `max`: The maximum temperature.
+  - `min`: The minimum temperature.
 
-There's also other fields like `hourly_predictions` and `daily_predictions` containing lists of predictions informations. More defaults on [JSON Schema](schema.json).
+Additional fields like `hourly_predictions` and `daily_predictions` contain lists of prediction information. Refer to the [JSON Schema](schema.json) for more details.
 
 ### Integration with Waybar
 
-To integrate the script with Waybar:
+To integrate the library with Waybar:
 
 1. Add a custom script module in Waybar's configuration:
 
@@ -129,7 +129,7 @@ To integrate the script with Waybar:
    {
        "modules-left": ["custom/weather"],
        "custom/weather": {
-           "exec": "python /path/to/weather_script.py --output waybar",
+           "exec": "weather --output waybar",
            "interval": 600
        }
    }
@@ -155,13 +155,16 @@ To integrate the script with Waybar:
 
 ### Customization
 
-- The script uses `FontAwesome` and emoji-based icons. Customize these icons by editing the `weather_icons_fa` and `weather_icons_emoji` dictionaries.
+- The library uses `FontAwesome` and emoji-based icons. Customize these icons by editing the `weather_icons_fa` and `weather_icons_emoji` dictionaries.
 
-## Error Handling
+## Installation
 
-- Validates `weather_id` and `lang` inputs.
-- Handles HTTP errors gracefully, including 404 errors for invalid locations.
+Install the library using pip:
+
+```bash
+pip install weather-library
+```
 
 ## License
 
-This script is open-source and available under the MIT License.
+This library is open-source and available under the MIT License.
